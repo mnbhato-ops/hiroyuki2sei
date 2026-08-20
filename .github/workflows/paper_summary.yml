@@ -6,6 +6,10 @@ on:
     - cron: '0 0 * * 1-5'
   workflow_dispatch:
 
+# GitHub Actions にファイル変更(git push)の書き込み権限を許可する設定
+permissions:
+  contents: write
+
 jobs:
   summarize:
     runs-on: ubuntu-latest
