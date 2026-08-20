@@ -9,7 +9,7 @@ from google import genai
 import requests
 
 # ---------------------------------------------------------------------------
-# 設定値
+# 設定値 (UIST 2025 用)
 # ---------------------------------------------------------------------------
 PROCEEDINGS_URL = "https://dl.acm.org/doi/proceedings/10.1145/3746059"
 HISTORY_FILE = "processed_papers.json"
@@ -76,7 +76,7 @@ def fetch_paper_details_api(doi_suffix: int) -> Optional[Dict[str, str]]:
 
 
 # ---------------------------------------------------------------------------
-# Gemini API (新アイコン ◆ 見出し版)
+# Gemini API (◆ 見出し版)
 # ---------------------------------------------------------------------------
 def summarize_with_gemini(title: str, text: str) -> str:
     api_key = os.getenv("GEMINI_API_KEY")
@@ -156,16 +156,14 @@ def summarize_with_gemini(title: str, text: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Slack 通知 (最初と最後に指定の一言を付与)
+# Slack 通知 (UIST 2025 専用・鮮やかなブルーダイヤ 💎 版)
 # ---------------------------------------------------------------------------
 def send_to_slack(current_paper_num: int, total_count: int, url: str, title: str, authors: str, summary: str) -> None:
     webhook_url = os.getenv("SLACK_WEBHOOK_URL")
     
-    prefix_suffix_text = "📢 *これは UIST 2025 からの抜粋です。*"
-    
+    # 🚀 順番: 1本 / 201本 💎 UIST2025
     header_text = (
-        f"{prefix_suffix_text}\n\n"
-        f"*🚀 順番:* {current_paper_num}本 / {total_count}本\n"
+        f"*🚀 順番:* {current_paper_num}本 / {total_count}本  💎 UIST2025\n"
         f"*📖 Title:* {title}\n"
         f"*✍️ Authors:* {authors}\n"
         f"*🌐 URL:* {url}"
@@ -175,7 +173,6 @@ def send_to_slack(current_paper_num: int, total_count: int, url: str, title: str
         print("[WARN] SLACK_WEBHOOK_URL 未設定のため画面に要約を出力します:\n")
         print(header_text)
         print("\n" + summary)
-        print("\n" + prefix_suffix_text)
         return
 
     payload = {
@@ -192,13 +189,6 @@ def send_to_slack(current_paper_num: int, total_count: int, url: str, title: str
                 "text": {
                     "type": "mrkdwn",
                     "text": summary
-                }
-            },
-            {
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": prefix_suffix_text
                 }
             },
             {"type": "divider"}
