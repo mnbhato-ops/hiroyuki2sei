@@ -156,13 +156,15 @@ def summarize_with_gemini(title: str, text: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Slack 通知 (新デザインアイコン版)
+# Slack 通知 (最初と最後に指定の一言を付与)
 # ---------------------------------------------------------------------------
 def send_to_slack(current_paper_num: int, total_count: int, url: str, title: str, authors: str, summary: str) -> None:
     webhook_url = os.getenv("SLACK_WEBHOOK_URL")
     
-    # 前回のBOTと差別化した新デザインアイコン (🚀 📖 ✍️ 🌐)
+    prefix_suffix_text = "📢 *これは UIST 2025 からの抜粋です。*"
+    
     header_text = (
+        f"{prefix_suffix_text}\n\n"
         f"*🚀 順番:* {current_paper_num}本 / {total_count}本\n"
         f"*📖 Title:* {title}\n"
         f"*✍️ Authors:* {authors}\n"
@@ -173,6 +175,7 @@ def send_to_slack(current_paper_num: int, total_count: int, url: str, title: str
         print("[WARN] SLACK_WEBHOOK_URL 未設定のため画面に要約を出力します:\n")
         print(header_text)
         print("\n" + summary)
+        print("\n" + prefix_suffix_text)
         return
 
     payload = {
@@ -189,6 +192,13 @@ def send_to_slack(current_paper_num: int, total_count: int, url: str, title: str
                 "text": {
                     "type": "mrkdwn",
                     "text": summary
+                }
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": prefix_suffix_text
                 }
             },
             {"type": "divider"}
